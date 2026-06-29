@@ -5,9 +5,15 @@ build/
 dist/
 wheels/
 *.egg-info
+.env
 
 # Virtual environments
 .venv
 
 # chromadb
 chroma/
+
+#Versions of the App
+*v1.py
+*v2.py
+*v3.py
