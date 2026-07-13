@@ -13,7 +13,5 @@ wheels/
 # chromadb
 chroma/
 
-#Versions of the App
-*v1.py
-*v2.py
-*v3.py
+#Older versions of the App
+archives/
