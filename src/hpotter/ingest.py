@@ -1,10 +1,19 @@
-import chromadb
 import re
+import chromadb
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from hpotter.config import Settings
+
+
+def reset_collection(client, name):
+    try:
+        client.delete_collection(name)
+    except Exception:
+        pass  # first run — nothing to delete
+    return client.get_or_create_collection(name)
 
 
 def insert_into_db(collection, docs, ids, mdata):
-    collection.add(ids=ids, documents=docs, metadatas=mdata)
+    collection.upsert(ids=ids, documents=docs, metadatas=mdata)
 
 
 def create_chapters(filename):
@@ -30,10 +39,12 @@ def create_chapters(filename):
     return chapters, chapter_ids, mdatas
 
 
-def create_chunk_from_chapter(chapter, chapter_id):
+def create_chunk_from_chapter(chapter, chapter_id, setting):
     chunk_ids = []
     chunk_metadatas = []
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=setting.chunk_size, chunk_overlap=setting.chunk_overlap
+    )
     chunks = text_splitter.split_text(chapter)
     for i, chunk in enumerate(chunks):
         chunk_id = f"chapter_{chapter_id}_chunk_{i}"
@@ -50,19 +61,23 @@ def create_chunk_from_chapter(chapter, chapter_id):
 
 
 def main():
+    settings = Settings()
     chapters, chapter_ids, mdata = create_chapters("resources/harry_potter_1.txt")
     client = chromadb.PersistentClient()
-    chapter_collection = client.get_or_create_collection("harry_potter_chapterwise")
-    insert_into_db(chapter_collection, chapters, chapter_ids, mdata)
-    chapterwise_chunk_collection = client.get_or_create_collection(
-        "harry_potter_chapterwise_chunks"
+    chapter_collection = reset_collection(client, settings.chroma_collection_chapter)
+    chapterwise_chunk_collection = reset_collection(
+        client, settings.chroma_collection_chunks
     )
-    print(chapter_collection)
+    insert_into_db(chapter_collection, chapters, chapter_ids, mdata)
     for index, chapter in enumerate(chapters):
         chunks, chunk_ids, chunk_metadata = create_chunk_from_chapter(
-            chapter, chapter_id=chapter_ids[index]
+            chapter, chapter_id=chapter_ids[index], setting=settings
         )
         insert_into_db(chapterwise_chunk_collection, chunks, chunk_ids, chunk_metadata)
+
+    print(
+        f"indexed {len(chapters)} chapters, {chapterwise_chunk_collection.count()} chunks"
+    )
 
 
 if __name__ == "__main__":

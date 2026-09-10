@@ -1,14 +1,41 @@
 [project]
 name = "harry-potter-rag"
 version = "0.1.0"
-description = "Add your description here"
+description = "A from-scratch Harry Potter RAG: ChromaDB retrieval, cross-encoder reranking, Gemini generation."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "chromadb>=1.5.9",
+    "google-genai>=2.22.0",
     "langchain-text-splitters>=1.1.2",
+    "pydantic-settings>=2.14.2",
     "python-dotenv>=1.2.2",
-    "qdrant-client>=1.18.0",
-    "requests>=2.34.2",
     "sentence-transformers>=5.6.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.6",
+]
+
+[project.scripts]
+hpotter = "hpotter.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hpotter"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 90
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

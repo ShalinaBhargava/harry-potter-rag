@@ -1,0 +1,143 @@
+[
+  {
+    "question": "What was written on the cake Hagrid gave Harry?",
+    "expected_keywords": [
+      "Happy Birthday Harry",
+      "chocolate"
+    ],
+    "category": "extractable"
+  },
+  {
+    "question": "What day of the week was Harry's eleventh birthday?",
+    "expected_keywords": [
+      "Tuesday",
+      "eleventh birthday"
+    ],
+    "category": "extractable",
+    "note": "system already answers this correctly - regression guard"
+  },
+  {
+    "question": "On what date is Harry's birthday?",
+    "expected_keywords": [
+      "31 July"
+    ],
+    "category": "multi_hop",
+    "note": "requires chaining line 4827 (break-in was on my birthday) with 4814 (break-in on 31 July). Expected to fail single-shot."
+  },
+  {
+    "question": "Who gave Harry his first broomstick?",
+    "expected_keywords": [
+      "McGonagall",
+      "Nimbus"
+    ],
+    "category": "extractable",
+    "note": "This is a known failure has previously returned I don't know"
+  },
+  {
+    "question": "What is the name of Hagrid's three-headed dog?",
+    "expected_keywords": [
+      "Fluffy"
+    ],
+    "category": "extractable",
+    "note": "easy - distinctive name"
+  },
+  {
+    "question": "Which platform does the Hogwarts Express leave from?",
+    "expected_keywords": [
+      "nine and three-quarters"
+    ],
+    "category": "extractable",
+    "note": "there is hyphenation in the name checked against text"
+  },
+  {
+    "question": "What does the Mirror of Erised show?",
+    "expected_keywords": [
+      "Erised",
+      "desire"
+    ],
+    "category": "extractable",
+    "note": "answer spans several sentences - chunk boundary risk"
+  },
+  {
+    "question": "Who created the Sorcerer's Stone?",
+    "expected_keywords": [
+      "Flamel"
+    ],
+    "category": "extractable",
+    "note": "Flamel is present in the text should be extractable"
+  },
+  {
+    "question": "What position does Harry play on the Quidditch team?",
+    "expected_keywords": [
+      "Seeker"
+    ],
+    "category": "extractable",
+    "note": "common word, appears in many chunks"
+  },
+  {
+    "question": "What is Harry's wand made of?",
+    "expected_keywords": [
+      "holly",
+      "phoenix"
+    ],
+    "category": "extractable",
+    "note": "Ollivanders scene"
+  },
+  {
+    "question": "Which house did the Sorting Hat first consider for Harry?",
+    "expected_keywords": [
+      "Slytherin"
+    ],
+    "category": "extractable",
+    "note": "requires reasoning over dialogue, not a stated fact"
+  },
+  {
+    "question": "What did Hagrid name his dragon?",
+    "expected_keywords": [
+      "Norbert"
+    ],
+    "category": "extractable",
+    "note": "easy"
+  },
+  {
+    "question": "Who is the Gryffindor house ghost?",
+    "expected_keywords": [
+      "Nearly Headless Nick",
+      "Sir Nicholas"
+    ],
+    "category": "extractable",
+    "note": "also called Sir Nicholas - two surface forms"
+  },
+  {
+    "question": "Who teaches Defense Against the Dark Arts?",
+    "expected_keywords": [
+      "Quirrell"
+    ],
+    "category": "extractable",
+    "note": "straight forward question answered in that way"
+  },
+  {
+    "question": "What was taken from vault seven hundred and thirteen?",
+    "expected_keywords": [
+      "seven hundred and thirteen",
+      "grubby little package"
+    ],
+    "category": "extractable",
+    "note": "number is spelled out"
+  },
+  {
+    "question": "What is Dumbledore's Christmas gift to Harry?",
+    "expected_keywords": [
+      "Invisibility Cloak",
+      "father"
+    ],
+    "category": "extractable",
+    "note": "attribution is indirect - hard case but possible"
+  },
+  {
+    "question": "why was Sirius Black imprisoned?",
+    "expected_keywords": [],
+    "category": "unanswerable",
+    "note": "UNANSWERABLE from book one - correct output is the I don't know refusal"
+  }
+]
