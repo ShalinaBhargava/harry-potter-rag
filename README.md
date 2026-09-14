@@ -1,4 +1,4 @@
-# harry-potter-rag
+# Harry Potter RAG
 
 A from-scratch Retrieval-Augmented Generation system over the Harry Potter books:
 ChromaDB retrieval, cross-encoder reranking, Gemini generation. No RAG framework —
@@ -49,10 +49,6 @@ when it happens to be right.
 ---
 
 ## Setup
-
-Developed in WSL Debian. If the repo lives on `/mnt/c`, put the venv on the native
-Linux filesystem — importing torch across the WSL filesystem boundary costs minutes
-per run.
 
 ```bash
 export UV_PROJECT_ENVIRONMENT=$HOME/.venvs/hpotter
@@ -117,15 +113,3 @@ them by construction. The case is kept as a known failure and as the motivating
 example for the planned agentic phase.
 
 ---
-
-## Roadmap
-
-| Phase | Status |
-|---|---|
-| 0 — reproducibility fixes | done |
-| 1 — package refactor + typed config | done |
-| 2 — evals | in progress |
-| 3 — LangChain | not started |
-| 4 — FastAPI + LangGraph | not started |
-| 5 — tools + MCP (both directions) | not started |
-| 6 — Streamlit, Docker, CI | not started |
