@@ -17,36 +17,35 @@ def main():
         if case.category == "unanswerable":
             continue
         total += 1
-        docs = rag.query_db(case.question)
-        if settings.use_reranker:
-            selected = rag.rerank_on_query(docs, case.question)
-        else:
-            selected = docs[: settings.n_rerank]
-        hit10 = any(
-            all(kw.lower() in c.lower() for kw in case.expected_keywords) for c in docs
+        retrieved, selected = rag.retrieve(case.question)
+
+        hit_retrieved = any(
+            all(kw.lower() in c.lower() for kw in case.expected_keywords)
+            for c in retrieved
         )
-        hit5 = any(
+        hit_selected = any(
             all(kw.lower() in c.lower() for kw in case.expected_keywords)
             for c in selected
         )
 
-        if not hit5:
+        if not hit_selected:
             present = {
-                kw: any(kw.lower() in c.lower() for c in docs)
+                kw: any(kw.lower() in c.lower() for c in retrieved)
                 for kw in case.expected_keywords
             }
             print(f"      keywords in top-{settings.n_retrieve}:", present)
 
         flag = (
             f"In top {settings.n_retrieve} but not top {settings.n_rerank}"
-            if (hit10 and not hit5)
+            if (hit_retrieved and not hit_selected)
             else ""
         )
-        if hit5:
+        if hit_selected:
             count_p += 1
         print(
-            f"{'PASS' if hit5 else 'FAIL'}  {settings.n_retrieve}:{int(hit10)} "
-            f"{settings.n_rerank}:{int(hit5)}  {case.question}  {flag}"
+            f"{'PASS' if hit_selected else 'FAIL'}  {settings.n_retrieve}:"
+            f"{int(hit_retrieved)} {settings.n_rerank}:{int(hit_selected)} "
+            f"{case.question} {flag}"
         )
 
     print(f"Cases passed: {count_p}/{total} ")

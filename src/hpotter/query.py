@@ -1,5 +1,3 @@
-import time
-
 import chromadb
 from google import genai
 from sentence_transformers import CrossEncoder, SentenceTransformer
@@ -35,6 +33,14 @@ class RagPipeline:
         reranked_documents.sort(key=lambda x: x[1], reverse=True)
         return [doc for doc, score in reranked_documents[: self.settings.n_rerank]]
 
+    def retrieve(self, query):
+        retrieved = self.query_db(query)
+        if self.settings.use_reranker:
+            selected = self.rerank_on_query(retrieved, query)
+        else:
+            selected = retrieved[: self.settings.n_rerank]
+        return retrieved, selected
+
     def build_context(self, documents, query):
         context = "\n\n".join(documents)
         prompt = (
@@ -69,20 +75,11 @@ def main():
     print("What's your query muggle?")
     while True:
         user_question = input()
-        if user_question != "x" or user_question != "X":
-            start = time.perf_counter()
-            documents = rag.query_db(user_question)
-            print(f"Chroma: {time.perf_counter() - start:.3f}s")
-            start = time.perf_counter()
-            reranked_documents = rag.rerank_on_query(documents, user_question)
-            print(f"Rerank: {time.perf_counter() - start:.3f}s")
-            start = time.perf_counter()
-            prompt = rag.build_context(reranked_documents, user_question)
-            print(f"Prompt: {time.perf_counter() - start:.3f}s")
-            start = time.perf_counter()
+        if user_question.lower() != "x":
+            _, selected = rag.retrieve(user_question)
+            prompt = rag.build_context(selected, user_question)
             response = rag.generate_answer(prompt)
             print(response)
-            print(f"Gemini: {time.perf_counter() - start:.3f}s")
 
             print("Anything else?")
         else:
