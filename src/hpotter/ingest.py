@@ -1,6 +1,8 @@
 import re
+
 import chromadb
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
 from hpotter.config import Settings
 
 

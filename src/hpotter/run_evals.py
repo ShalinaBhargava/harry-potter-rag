@@ -1,24 +1,25 @@
-import chromadb
-from hpotter.query import query_db, rerank_on_query
+from pathlib import Path
+
 from hpotter.config import Settings
 from hpotter.evals import load_cases
-from pathlib import Path
+from hpotter.query import RagPipeline
 
 
 def main():
     settings = Settings()
-    client = chromadb.PersistentClient()
-    collection = client.get_collection(settings.chroma_collection_chunks)
+    rag = RagPipeline(settings)
+    count_p = 0
+    total = 0
 
     cases = load_cases(Path("evals/questions.json"))
 
     for case in cases:
         if case.category == "unanswerable":
             continue
-
-        docs = query_db(collection, case.question, settings)
+        total += 1
+        docs = rag.query_db(case.question)
         if settings.use_reranker:
-            selected = rerank_on_query(docs, case.question, settings)
+            selected = rag.rerank_on_query(docs, case.question)
         else:
             selected = docs[: settings.n_rerank]
         hit10 = any(
@@ -41,9 +42,14 @@ def main():
             if (hit10 and not hit5)
             else ""
         )
+        if hit5:
+            count_p += 1
         print(
-            f"{'PASS' if hit5 else 'FAIL'}  {settings.n_retrieve}:{int(hit10)} {settings.n_rerank}:{int(hit5)}  {case.question}  {flag}"
+            f"{'PASS' if hit5 else 'FAIL'}  {settings.n_retrieve}:{int(hit10)} "
+            f"{settings.n_rerank}:{int(hit5)}  {case.question}  {flag}"
         )
+
+    print(f"Cases passed: {count_p}/{total} ")
 
 
 if __name__ == "__main__":
